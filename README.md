@@ -1,18 +1,19 @@
 # 🛡️ SAPS iLodge
 
+## 📌 About
+
+SAPS iLodge is a modern, AI-powered complaint and ticket management system built for the South African Police Service. It allows citizens, staff, and administrators to lodge, track, and manage service delivery complaints — all from a single web interface with no installation required.
+
+
 ---
 
 ## 🌐 Live Demo
 
 🔗 **[https://saps-ilodge.onrender.com](https://saps-ilodge.onrender.com)**
 
----
-
-## 📌 About
-
-SAPS iLodge is a modern, AI-powered complaint and ticket management system built for the South African Police Service. It allows citizens, staff, and administrators to lodge, track, and manage service delivery complaints — all from a single web interface with no installation required.
 
 ---
+
 
 ## ✨ Features
 
