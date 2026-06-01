@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>SAPS iLodge | Modern Ticket System</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a3a 100%);
+            min-height: 100vh;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            padding: 20px;
+        }
+
+        .app-container { max-width: 1400px; margin: 0 auto; }
+
+        .header {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 20px 32px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,193,7,0.3);
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, #1e3a3a, #ffb347);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .logo p { color: #64748b; font-size: 0.85rem; }
+
+        .badge {
+            background: #ffb347;
+            color: #1e3a3a;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .role-selector {
+            display: flex;
+            gap: 12px;
+            background: #f1f5f9;
+            padding: 6px;
+            border-radius: 60px;
+            width: fit-content;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .role-btn {
+            border: none;
+            background: transparent;
+            padding: 10px 28px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .role-btn.active {
+            background: #1e3a3a;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .card {
+            background: white;
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
+        }
+
+        .card:hover { transform: translateY(-2px); }
+
+        .auth-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .form-group { margin-bottom: 20px; }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+            color: #334155;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #ffb347;
+            box-shadow: 0 0 0 3px rgba(255,179,71,0.1);
+        }
+
+        textarea { resize: vertical; min-height: 100px; }
+
+        .password-wrapper { position: relative; }
+        .password-wrapper input { padding-right: 48px; }
+
+        .eye-btn {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #94a3b8;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            transition: color 0.2s;
+        }
+        .eye-btn:hover { color: #1e3a3a; }
+
+        .btn {
+            background: #1e3a3a;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary { background: linear-gradient(135deg, #1e3a3a, #2d5a5a); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .btn-secondary { background: #ffb347; color: #1e3a3a; }
+        .btn-secondary:hover { background: #ff9f1a; transform: translateY(-2px); }
+        .btn-outline { background: transparent; border: 2px solid #ffb347; color: #ffb347; }
+        .btn-outline:hover { background: #ffb347; color: white; }
+        .btn-small { width: auto; padding: 8px 16px; font-size: 0.85rem; }
+        .btn-open { background: linear-gradient(135deg, #0ea5e9, #38bdf8); color: white; border: none; padding: 7px 16px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: all 0.2s; width: auto; }
+        .btn-open:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(14,165,233,0.4); }
+        .btn-resolve { background: linear-gradient(135deg, #10b981, #34d399); color: white; border: none; padding: 7px 16px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: all 0.2s; width: auto; }
+        .btn-resolve:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(16,185,129,0.4); }
+        .btn-close-ticket { background: linear-gradient(135deg, #64748b, #94a3b8); color: white; border: none; padding: 7px 16px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: all 0.2s; width: auto; }
+        .btn-close-ticket:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(100,116,139,0.4); }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 16px;
+            margin-top: 12px;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+        .alert-error { background: #fee2e2; color: #b91c1c; border-left: 4px solid #b91c1c; }
+        .alert-success { background: #d1fae5; color: #065f46; border-left: 4px solid #065f46; }
+        .alert-info { background: #dbeafe; color: #1e40af; border-left: 4px solid #1e40af; }
+
+        .ticket-section {
+            margin-top: 24px;
+            background: #f8fafc;
+            border-radius: 24px;
+            padding: 24px;
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .search-bar input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            min-width: 160px;
+        }
+
+        .search-bar select {
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 40px;
+            font-size: 0.9rem;
+        }
+
+        /* ── Ticket accordion (admin) ── */
+        .ticket-accordion {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .ticket-tab {
+            background: white;
+            border-radius: 18px;
+            border-left: 6px solid;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            overflow: hidden;
+            transition: box-shadow 0.2s;
+        }
+
+        .ticket-tab:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
+
+        .ticket-tab-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            cursor: pointer;
+            user-select: none;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .ticket-tab-header:hover { background: #f8fafc; }
+
+        .ticket-tab-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            flex: 1;
+        }
+
+        .ticket-tab-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ticket-tab-body {
+            display: none;
+            padding: 0 20px 20px;
+            border-top: 1px solid #f1f5f9;
+            animation: slideDown 0.2s ease;
+        }
+
+        .ticket-tab-body.open { display: block; }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .chevron {
+            width: 18px;
+            height: 18px;
+            transition: transform 0.25s ease;
+            color: #94a3b8;
+            flex-shrink: 0;
+        }
+
+        .ticket-tab.expanded .chevron { transform: rotate(180deg); }
+
+        .ticket-body-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px 24px;
+            margin-top: 14px;
+            font-size: 0.9rem;
+        }
+
+        .ticket-body-grid .full-width { grid-column: 1 / -1; }
+
+        .ticket-body-grid .field-label {
+            font-weight: 600;
+            color: #475569;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 3px;
+        }
+
+        .ticket-body-grid .field-value { color: #1e293b; }
+
+        .ticket-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 18px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .action-label {
+            font-size: 0.78rem;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        /* ── Status badges ── */
+        .status-pill {
+            padding: 4px 13px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .status-Pending    { background: #fef9c3; color: #854d0e; }
+        .status-InProgress { background: #dbeafe; color: #1e40af; }
+        .status-Resolved   { background: #d1fae5; color: #065f46; }
+        .status-Closed     { background: #f1f5f9; color: #475569; }
+
+        .priority-High   { border-left-color: #dc2626; }
+        .priority-Medium { border-left-color: #f97316; }
+        .priority-Low    { border-left-color: #10b981; }
+
+        .priority-pill {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 700;
+        }
+
+        /* ── Plain ticket list (citizen/staff) ── */
+        .ticket-list {
+            max-height: 500px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .ticket-item {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            border-left: 6px solid;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .ticket-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+            gap: 8px;
+        }
+
+        .ticket-id { font-weight: 700; font-size: 1rem; color: #1e3a3a; }
+
+        /* stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #1e3a3a, #2d5a5a);
+            color: white;
+            padding: 20px;
+            border-radius: 20px;
+            text-align: center;
+        }
+
+        .stat-card.admin-stat { background: linear-gradient(135deg, #7c3aed, #a855f7); }
+        .stat-card.pending-stat { background: linear-gradient(135deg, #b45309, #d97706); }
+        .stat-card.progress-stat { background: linear-gradient(135deg, #0369a1, #0ea5e9); }
+        .stat-card.resolved-stat { background: linear-gradient(135deg, #065f46, #10b981); }
+
+        .stat-number { font-size: 2rem; font-weight: 700; }
+        .stat-label { font-size: 0.82rem; opacity: 0.9; margin-top: 6px; }
+
+        /* tabs */
+        .tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            background: none;
+            border: none;
+            padding: 8px 24px;
+            font-weight: 600;
+            cursor: pointer;
+            color: #64748b;
+            transition: all 0.3s ease;
+            border-radius: 40px;
+            font-size: 0.9rem;
+        }
+
+        .tab.active { background: #1e3a3a; color: white; }
+        .tab.admin-tab.active { background: linear-gradient(135deg, #7c3aed, #a855f7); }
+
+        /* Status sub-tabs */
+        .sub-tabs {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+            padding: 4px 0;
+        }
+
+        .sub-tab {
+            border: 2px solid #e2e8f0;
+            background: white;
+            padding: 7px 16px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            color: #64748b;
+            font-size: 0.82rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .sub-tab:hover { border-color: #ffb347; color: #1e3a3a; }
+
+        .sub-tab.sub-tab-active {
+            background: #1e3a3a;
+            color: white;
+            border-color: #1e3a3a;
+        }
+
+        .sub-tab-count {
+            background: rgba(255,255,255,0.25);
+            padding: 1px 7px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .sub-tab.sub-tab-active .sub-tab-count { background: rgba(255,255,255,0.3); }
+        .sub-tab:not(.sub-tab-active) .sub-tab-count { background: #f1f5f9; color: #475569; }
+
+        .admin-header-badge {
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.82rem;
+        }
+
+        .toggle-link { text-align: center; margin-top: 16px; }
+        .toggle-link a { color: #ffb347; text-decoration: none; font-weight: 600; cursor: pointer; }
+        .toggle-link a:hover { text-decoration: underline; }
+        .hidden { display: none; }
+
+        .ai-loading {
+            background: linear-gradient(90deg, #ffb347, #ffd89b);
+            background-size: 200% 200%;
+            animation: gradient 1.5s ease infinite;
+            color: #1e3a3a;
+            font-weight: 600;
+        }
+
+        @keyframes gradient {
+            0%   { background-position: 0% 50%; }
+            50%  { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        footer { text-align: center; margin-top: 32px; color: #94a3b8; font-size: 0.8rem; }
+
+        @media (max-width: 768px) {
+            .auth-grid { grid-template-columns: 1fr; }
+            .header { flex-direction: column; text-align: center; gap: 12px; }
+            .ticket-body-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <div class="header">
+        <div class="logo">
+            <h1>🛡️ SAPS iLodge</h1>
+            <p>South African Police Service | AI-Powered Ticket System</p>
+        </div>
+        <div class="badge">🇿🇦 Official Portal</div>
+    </div>
+    <div id="app"></div>
+    <footer>© 2024 SAPS Service Delivery | All data stored locally | Powered by AI</footer>
+</div>
+
+<script>
+    const STORAGE_USERS   = 'saps_users';
+    const STORAGE_TICKETS = 'saps_tickets';
+    const GEMINI_API_KEY  = 'YOUR_GEMINI_API_KEY_HERE';
+    const GEMINI_API_URL  = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
+
+    const POLICE_STATIONS = [
+        "Soweto SAPS","Pretoria Central SAPS","Johannesburg Central SAPS",
+        "Cape Town Central SAPS","Durban Central SAPS","Port Elizabeth SAPS",
+        "Bloemfontein SAPS","Mthatha SAPS","Nelspruit SAPS","Kimberley SAPS",
+        "Polokwane SAPS","Rustenburg SAPS","George SAPS","Vereeniging SAPS",
+        "Mitchells Plain SAPS","Soshanguve SAPS","Tembisa SAPS"
+    ];
+
+    // ── Status helpers ─────────────────────────────────────────────────────────
+    const STATUS = { PENDING:'Pending', IN_PROGRESS:'In Progress', RESOLVED:'Resolved', CLOSED:'Closed' };
+
+    function statusClass(s) {
+        return { 'Pending':'status-Pending','In Progress':'status-InProgress','Resolved':'status-Resolved','Closed':'status-Closed' }[s] || 'status-Pending';
+    }
+
+    function statusEmoji(s) {
+        return { 'Pending':'⏳','In Progress':'🔵','Resolved':'✅','Closed':'🔒' }[s] || '⏳';
+    }
+
+    // Admin can advance: Pending → In Progress → Resolved → Closed
+    function nextActions(s) {
+        if (s === STATUS.PENDING)     return [{ label:'Open Ticket', next: STATUS.IN_PROGRESS, cls:'btn-open' }];
+        if (s === STATUS.IN_PROGRESS) return [{ label:'Mark Resolved', next: STATUS.RESOLVED, cls:'btn-resolve' }, { label:'Close Ticket', next: STATUS.CLOSED, cls:'btn-close-ticket' }];
+        if (s === STATUS.RESOLVED)    return [{ label:'Close Ticket', next: STATUS.CLOSED, cls:'btn-close-ticket' }];
+        return []; // Closed — no further actions
+    }
+
+    // ── Storage ─────────────────────────────────────────────────────────────────
+    function initStorage() {
+        if (!localStorage.getItem(STORAGE_USERS)) {
+            localStorage.setItem(STORAGE_USERS, JSON.stringify([
+                { id:'admin_1',  email:'admin@saps.gov.za',    password:'admin123',   role:'admin',    name:'Admin Supervisor' },
+                { id:'staff_1',  email:'staff@saps.gov.za',    password:'staff123',   role:'staff',    name:'Captain David Mbeki' },
+                { id:'ext_1',    email:'citizen@example.com',  password:'citizen123', role:'external', name:'Thabo Nkosi' }
+            ]));
+        }
+        if (!localStorage.getItem(STORAGE_TICKETS)) {
+            localStorage.setItem(STORAGE_TICKETS, JSON.stringify([]));
+        }
+    }
+
+    function getUsers()         { return JSON.parse(localStorage.getItem(STORAGE_USERS)); }
+    function saveUsers(u)       { localStorage.setItem(STORAGE_USERS, JSON.stringify(u)); }
+    function getTickets()       { return JSON.parse(localStorage.getItem(STORAGE_TICKETS)); }
+    function saveTickets(t)     { localStorage.setItem(STORAGE_TICKETS, JSON.stringify(t)); }
+
+    function generateTicketId() {
+        const maxId = getTickets().reduce((max, t) => {
+            const n = parseInt(t.ticketId.split('-')[1]);
+            return n > max ? n : max;
+        }, 2400);
+        return `SAPS-${maxId + 1}`;
+    }
+
+    // ── AI Routing ──────────────────────────────────────────────────────────────
+    async function routeWithAI(description) {
+        if (GEMINI_API_KEY === 'YOUR_GEMINI_API_KEY_HERE') return fallbackRouting(description);
+        try {
+            const r = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+                method:'POST', headers:{'Content-Type':'application/json'},
+                body: JSON.stringify({ contents:[{ parts:[{ text:`Analyze this police service complaint and determine which department: IT, Finance, Operations, or HR. Complaint: "${description}". JSON only: {"department":"IT","reason":"explanation"}` }] }] })
+            });
+            const d = await r.json();
+            return JSON.parse(d.candidates[0].content.parts[0].text);
+        } catch { return fallbackRouting(description); }
+    }
+
+    function fallbackRouting(d) {
+        const t = d.toLowerCase();
+        if (/computer|system|software|login|network|internet/.test(t)) return { department:'IT',         reason:'Technical system issue — routed to IT' };
+        if (/salary|pay|budget|finance|invoice|payment/.test(t))       return { department:'Finance',    reason:'Financial matter — routed to Finance' };
+        if (/\bhr\b|leave|recruitment|personnel|employee/.test(t))     return { department:'HR',         reason:'HR matter — routed to Human Resources' };
+        if (/operation|logistics|vehicle|patrol|dispatch/.test(t))     return { department:'Operations', reason:'Operational matter — routed to Operations' };
+        return { department:'Operations', reason:'General matter — routed to Operations' };
+    }
+
+    // ── SVG helpers ─────────────────────────────────────────────────────────────
+    function eyeSVG(visible) {
+        return visible
+            ? `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
+            : `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+    }
+
+    function chevronSVG() {
+        return `<svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`;
+    }
+
+    // ── State ────────────────────────────────────────────────────────────────────
+    let currentUser       = null;
+    let showLogin         = true;
+    let activeRole        = 'external';
+    let citizenActiveTab  = 'lodge';
+    let citizenStatusTab  = 'all';
+    let staffActiveTab    = 'lodge';
+    let staffStatusTab    = 'all';
+    let adminActiveTab    = 'tickets';
+    let openTicketTabs    = new Set();
+
+    const app = document.getElementById('app');
+
+    function render() {
+        if (!currentUser)                        renderAuth();
+        else if (currentUser.role === 'admin')   renderAdminDashboard();
+        else if (currentUser.role === 'staff')   renderStaffDashboard();
+        else                                     renderExternalDashboard();
+    }
+
+    // ══ AUTH ════════════════════════════════════════════════════════════════════
+    function renderAuth() {
+        app.innerHTML = `
+            <div class="role-selector">
+                <button class="role-btn ${activeRole==='external'?'active':''}" onclick="setRole('external')">👤 Citizen</button>
+                <button class="role-btn ${activeRole==='staff'?'active':''}"    onclick="setRole('staff')">👮 Staff</button>
+                <button class="role-btn ${activeRole==='admin'?'active':''}"    onclick="setRole('admin')">🔑 Admin</button>
+            </div>
+            <div class="auth-grid">
+                <div class="card ${showLogin?'':'hidden'}">
+                    <h2 style="margin-bottom:24px;">🔐 Login</h2>
+                    <div class="form-group"><input type="email" id="loginEmail" placeholder="Email address"></div>
+                    <div class="form-group">
+                        <div class="password-wrapper">
+                            <input type="password" id="loginPassword" placeholder="Password">
+                            <button class="eye-btn" id="eyeLogin" onclick="togglePwd('loginPassword','eyeLogin')" type="button">${eyeSVG(false)}</button>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="handleLogin()">Sign In</button>
+                    ${activeRole!=='admin'?`<div class="toggle-link"><a onclick="toggleAuth()">Don't have an account? Create one →</a></div>`:''}
+                    <div id="loginMsg"></div>
+                </div>
+                <div class="card ${!showLogin?'':'hidden'}">
+                    <h2 style="margin-bottom:24px;">📝 Create Account</h2>
+                    <div class="form-group"><input type="text" id="signupName" placeholder="Full Name"></div>
+                    <div class="form-group"><input type="email" id="signupEmail" placeholder="Email address"></div>
+                    <div class="form-group">
+                        <div class="password-wrapper">
+                            <input type="password" id="signupPassword" placeholder="Password">
+                            <button class="eye-btn" id="eyeSignup" onclick="togglePwd('signupPassword','eyeSignup')" type="button">${eyeSVG(false)}</button>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" onclick="handleSignup()">Create Account</button>
+                    <div class="toggle-link"><a onclick="toggleAuth()">← Back to Login</a></div>
+                    <div id="signupMsg"></div>
+                </div>
+            </div>
+            <div class="card" style="background:#f8fafc;margin-top:16px;">
+                <p style="text-align:center;color:#64748b;font-size:0.85rem;">
+                    <strong>Demo Credentials:</strong><br>
+                    Citizen: citizen@example.com / citizen123 &nbsp;|&nbsp;
+                    Staff: staff@saps.gov.za / staff123 &nbsp;|&nbsp;
+                    Admin: admin@saps.gov.za / admin123
+                </p>
+            </div>`;
+    }
+
+    // ══ CITIZEN ═════════════════════════════════════════════════════════════════
+    function renderExternalDashboard() {
+        const myTickets = getTickets().filter(t => t.userId === currentUser.id);
+        const counts = statusCounts(myTickets);
+        app.innerHTML = `
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
+                <h2>👋 Welcome, ${currentUser.name}</h2>
+                <button class="btn btn-outline btn-small" onclick="logout()" style="width:auto;">🚪 Logout</button>
+            </div>
+            <div class="tabs">
+                <button class="tab ${citizenActiveTab==='lodge'?'active':''}"     onclick="setCitizenTab('lodge')">📢 Lodge Complaint</button>
+                <button class="tab ${citizenActiveTab==='mytickets'?'active':''}" onclick="setCitizenTab('mytickets')">📋 My Tickets (${myTickets.length})</button>
+            </div>
+            <div id="citizenContent"></div>`;
+        citizenActiveTab === 'lodge' ? renderCitizenLodgeForm() : renderCitizenMyTickets();
+    }
+
+    function renderCitizenLodgeForm() {
+        const c = document.getElementById('citizenContent');
+        if (!c) return;
+        c.innerHTML = `
+            <div class="card">
+                <h3 style="margin-bottom:20px;">📢 Lodge New Complaint</h3>
+                <div class="form-group">
+                    <label>Police Station</label>
+                    <select id="stationSelect">${POLICE_STATIONS.map(s=>`<option>${s}</option>`).join('')}</select>
+                </div>
+                <div class="form-group">
+                    <label>Complaint Description</label>
+                    <textarea id="complaintDesc" placeholder="Describe your issue in detail..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Priority</label>
+                    <select id="prioritySelect">
+                        <option value="High">High 🔴</option>
+                        <option value="Medium">Medium 🟡</option>
+                        <option value="Low">Low 🟢</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" onclick="submitTicket()">✅ Submit Ticket</button>
+                <div id="ticketMsg"></div>
+            </div>`;
+    }
+
+    function renderCitizenMyTickets() {
+        const c = document.getElementById('citizenContent');
+        if (!c) return;
+        const myTickets = getTickets().filter(t => t.userId === currentUser.id);
+        const counts = statusCounts(myTickets);
+        c.innerHTML = `
+            <div class="sub-tabs">
+                ${buildStatusTabs(counts, citizenStatusTab, 'setCitizenStatusTab')}
+            </div>
+            <div class="ticket-section" style="margin-top:0;">
+                <div class="search-bar">
+                    <input type="text" id="citizenSearch" placeholder="🔍 Search tickets...">
+                    <button class="btn btn-outline btn-small" onclick="renderCitizenMyTickets()" style="width:auto;">Clear</button>
+                </div>
+                <div id="citizenTicketList" class="ticket-list"></div>
+            </div>`;
+        applyAndDisplay(myTickets, citizenStatusTab, 'citizenSearch', 'citizenTicketList', () => renderCitizenMyTickets());
+    }
+
+    // ══ STAFF ════════════════════════════════════════════════════════════════════
+    function renderStaffDashboard() {
+        const myTickets = getTickets().filter(t => t.userId === currentUser.id);
+        app.innerHTML = `
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
+                <h2>👮 Staff Dashboard — ${currentUser.name}</h2>
+                <button class="btn btn-outline btn-small" onclick="logout()" style="width:auto;">🚪 Logout</button>
+            </div>
+            <div class="tabs">
+                <button class="tab ${staffActiveTab==='lodge'?'active':''}"     onclick="setStaffTab('lodge')">📝 Lodge New Ticket</button>
+                <button class="tab ${staffActiveTab==='mytickets'?'active':''}" onclick="setStaffTab('mytickets')">📋 My Tickets (${myTickets.length})</button>
+            </div>
+            <div id="staffContent"></div>`;
+        staffActiveTab === 'lodge' ? renderStaffLodgeForm() : renderStaffMyTickets();
+    }
+
+    function renderStaffLodgeForm() {
+        const c = document.getElementById('staffContent');
+        if (!c) return;
+        c.innerHTML = `
+            <div class="card">
+                <h3 style="margin-bottom:20px;">📝 Lodge Ticket as Staff Member</h3>
+                <div class="form-group">
+                    <label>Police Station</label>
+                    <select id="staffStationSelect">${POLICE_STATIONS.map(s=>`<option>${s}</option>`).join('')}</select>
+                </div>
+                <div class="form-group">
+                    <label>Complaint Description</label>
+                    <textarea id="staffComplaintDesc" rows="4" placeholder="Describe the issue in detail..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Priority</label>
+                    <select id="staffPrioritySelect">
+                        <option value="High">High 🔴</option>
+                        <option value="Medium">Medium 🟡</option>
+                        <option value="Low">Low 🟢</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" onclick="submitStaffTicket()">✅ Submit Ticket</button>
+                <div id="staffTicketMsg"></div>
+            </div>`;
+    }
+
+    function renderStaffMyTickets() {
+        const c = document.getElementById('staffContent');
+        if (!c) return;
+        const myTickets = getTickets().filter(t => t.userId === currentUser.id);
+        const counts = statusCounts(myTickets);
+        c.innerHTML = `
+            <div class="sub-tabs">
+                ${buildStatusTabs(counts, staffStatusTab, 'setStaffStatusTab')}
+            </div>
+            <div class="ticket-section" style="margin-top:0;">
+                <div class="search-bar">
+                    <input type="text" id="staffMySearch" placeholder="🔍 Search my tickets...">
+                    <button class="btn btn-outline btn-small" onclick="renderStaffMyTickets()" style="width:auto;">Clear</button>
+                </div>
+                <div id="staffMyTicketList" class="ticket-list"></div>
+            </div>`;
+        applyAndDisplay(myTickets, staffStatusTab, 'staffMySearch', 'staffMyTicketList', () => renderStaffMyTickets());
+    }
+
+    // ══ ADMIN ════════════════════════════════════════════════════════════════════
+    function renderAdminDashboard() {
+        const tickets = getTickets();
+        const s = {
+            total:      tickets.length,
+            pending:    tickets.filter(t=>t.status===STATUS.PENDING).length,
+            inProgress: tickets.filter(t=>t.status===STATUS.IN_PROGRESS).length,
+            resolved:   tickets.filter(t=>t.status===STATUS.RESOLVED).length,
+            closed:     tickets.filter(t=>t.status===STATUS.CLOSED).length,
+        };
+        app.innerHTML = `
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
+                <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+                    <h2>🔑 Admin Dashboard</h2>
+                    <span class="admin-header-badge">Supervisor</span>
+                </div>
+                <button class="btn btn-outline btn-small" onclick="logout()" style="width:auto;">🚪 Logout</button>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card admin-stat">  <div class="stat-number">${s.total}</div>      <div class="stat-label">Total Tickets</div></div>
+                <div class="stat-card pending-stat"> <div class="stat-number">${s.pending}</div>    <div class="stat-label">⏳ Pending</div></div>
+                <div class="stat-card progress-stat"><div class="stat-number">${s.inProgress}</div> <div class="stat-label">🔵 In Progress</div></div>
+                <div class="stat-card resolved-stat"><div class="stat-number">${s.resolved}</div>   <div class="stat-label">✅ Resolved</div></div>
+                <div class="stat-card">              <div class="stat-number">${s.closed}</div>     <div class="stat-label">🔒 Closed</div></div>
+            </div>
+            <div class="tabs">
+                <button class="tab admin-tab ${adminActiveTab==='tickets'?'active':''}" onclick="setAdminTab('tickets')">🎟️ All Tickets</button>
+                <button class="tab admin-tab ${adminActiveTab==='users'?'active':''}"   onclick="setAdminTab('users')">👥 Manage Users</button>
+            </div>
+            <div id="adminContent"></div>`;
+        adminActiveTab === 'tickets' ? renderAdminTickets(tickets) : renderAdminUsers();
+    }
+
+    function renderAdminTickets(tickets) {
+        const c = document.getElementById('adminContent');
+        if (!c) return;
+        c.innerHTML = `
+            <div class="ticket-section" style="margin-top:0;">
+                <div class="search-bar">
+                    <input type="text" id="adminSearch" placeholder="🔍 Search by ID, station, department, person...">
+                    <select id="adminStatusFilter">
+                        <option value="">All Statuses</option>
+                        <option>Pending</option>
+                        <option>In Progress</option>
+                        <option>Resolved</option>
+                        <option>Closed</option>
+                    </select>
+                    <button class="btn btn-outline btn-small" onclick="clearAdminSearch()" style="width:auto;">Clear</button>
+                </div>
+                <div id="adminTicketList" class="ticket-accordion"></div>
+            </div>`;
+        displayAdminTickets(tickets);
+
+        const applyFilter = () => {
+            const q = document.getElementById('adminSearch').value.toLowerCase();
+            const st = document.getElementById('adminStatusFilter').value;
+            displayAdminTickets(tickets.filter(t =>
+                (!q || [t.ticketId, t.station, t.category, t.userName, t.description].some(v => v.toLowerCase().includes(q))) &&
+                (!st || t.status === st)
+            ));
+        };
+        document.getElementById('adminSearch').addEventListener('input', applyFilter);
+        document.getElementById('adminStatusFilter').addEventListener('change', applyFilter);
+    }
+
+    function displayAdminTickets(tickets) {
+        const c = document.getElementById('adminTicketList');
+        if (!c) return;
+        if (tickets.length === 0) {
+            c.innerHTML = '<div style="text-align:center;padding:40px;color:#64748b;">No tickets found.</div>';
+            return;
+        }
+
+        // Sort: Pending first, then In Progress, Resolved, Closed
+        const order = { 'Pending':0,'In Progress':1,'Resolved':2,'Closed':3 };
+        const sorted = [...tickets].sort((a,b) => (order[a.status]??99) - (order[b.status]??99));
+
+        c.innerHTML = sorted.map(t => {
+            const isOpen    = openTicketTabs.has(t.ticketId);
+            const priColor  = t.priority==='High' ? '#fee2e2;color:#b91c1c' : t.priority==='Medium' ? '#fff3e3;color:#ea6c00' : '#d1fae5;color:#065f46';
+            const actions   = nextActions(t.status);
+
+            return `
+            <div class="ticket-tab priority-${t.priority} ${isOpen?'expanded':''}" id="tab-${t.ticketId}">
+                <div class="ticket-tab-header" onclick="toggleTab('${t.ticketId}')">
+                    <div class="ticket-tab-left">
+                        <span class="ticket-id">🎫 ${t.ticketId}</span>
+                        <span class="priority-pill" style="background:${priColor}">${t.priority}</span>
+                        <span class="status-pill ${statusClass(t.status)}">${statusEmoji(t.status)} ${t.status}</span>
+                        <span style="font-size:0.82rem;color:#64748b;">📂 ${t.category} &nbsp;·&nbsp; 👤 ${t.userName}</span>
+                    </div>
+                    <div class="ticket-tab-right">
+                        <span style="font-size:0.75rem;color:#94a3b8;">${new Date(t.timestamp).toLocaleDateString('en-ZA')}</span>
+                        ${chevronSVG()}
+                    </div>
+                </div>
+                <div class="ticket-tab-body ${isOpen?'open':''}">
+                    <div class="ticket-body-grid">
+                        <div>
+                            <div class="field-label">📍 Station</div>
+                            <div class="field-value">${t.station}</div>
+                        </div>
+                        <div>
+                            <div class="field-label">🗓 Date Lodged</div>
+                            <div class="field-value">${new Date(t.timestamp).toLocaleString('en-ZA')}</div>
+                        </div>
+                        <div class="full-width">
+                            <div class="field-label">📝 Description</div>
+                            <div class="field-value">${t.description}</div>
+                        </div>
+                        <div class="full-width">
+                            <div class="field-label">🤖 AI Routing Reason</div>
+                            <div class="field-value">${t.aiReason || 'Keyword matched'}</div>
+                        </div>
+                        ${t.openedAt   ? `<div><div class="field-label">🔵 Opened At</div><div class="field-value">${new Date(t.openedAt).toLocaleString('en-ZA')}</div></div>` : ''}
+                        ${t.resolvedAt ? `<div><div class="field-label">✅ Resolved At</div><div class="field-value">${new Date(t.resolvedAt).toLocaleString('en-ZA')}</div></div>` : ''}
+                        ${t.closedAt   ? `<div><div class="field-label">🔒 Closed At</div><div class="field-value">${new Date(t.closedAt).toLocaleString('en-ZA')}</div></div>` : ''}
+                    </div>
+                    ${actions.length ? `
+                    <div class="ticket-actions">
+                        <span class="action-label">Move to:</span>
+                        ${actions.map(a => `<button class="${a.cls}" onclick="advanceStatus('${t.ticketId}','${a.next}')">${a.label}</button>`).join('')}
+                    </div>` : `<div style="margin-top:14px;font-size:0.82rem;color:#64748b;font-weight:600;">🔒 Ticket is closed — no further actions available.</div>`}
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    function renderAdminUsers() {
+        const c = document.getElementById('adminContent');
+        if (!c) return;
+        const users = getUsers();
+        c.innerHTML = `
+            <div class="card">
+                <h3 style="margin-bottom:20px;">👥 Registered Users (${users.length})</h3>
+                <div style="overflow-x:auto;">
+                    <table style="width:100%;border-collapse:collapse;font-size:0.9rem;">
+                        <thead>
+                            <tr style="background:#f8fafc;text-align:left;">
+                                <th style="padding:12px 16px;border-bottom:2px solid #e2e8f0;">Name</th>
+                                <th style="padding:12px 16px;border-bottom:2px solid #e2e8f0;">Email</th>
+                                <th style="padding:12px 16px;border-bottom:2px solid #e2e8f0;">Role</th>
+                                <th style="padding:12px 16px;border-bottom:2px solid #e2e8f0;">Tickets</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${users.map(u => {
+                                const count = getTickets().filter(t => t.userId === u.id).length;
+                                const rc = u.role==='admin' ? '#7c3aed' : u.role==='staff' ? '#1e3a3a' : '#10b981';
+                                return `<tr style="border-bottom:1px solid #f1f5f9;">
+                                    <td style="padding:12px 16px;font-weight:600;">${u.name}</td>
+                                    <td style="padding:12px 16px;color:#64748b;">${u.email}</td>
+                                    <td style="padding:12px 16px;"><span style="background:${rc}20;color:${rc};padding:3px 10px;border-radius:20px;font-size:0.75rem;font-weight:600;text-transform:capitalize;">${u.role}</span></td>
+                                    <td style="padding:12px 16px;">${count}</td>
+                                </tr>`;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>`;
+    }
+
+    // ── Simple ticket display (citizen / staff read-only) ──────────────────────
+    function displaySimpleTickets(tickets, containerId) {
+        const c = document.getElementById(containerId);
+        if (!c) return;
+        if (tickets.length === 0) {
+            c.innerHTML = '<div style="text-align:center;padding:40px;color:#64748b;">No tickets found.</div>';
+            return;
+        }
+        c.innerHTML = tickets.map(t => {
+            const priColor = t.priority==='High' ? '#fee2e2;color:#b91c1c' : t.priority==='Medium' ? '#fff3e3;color:#ea6c00' : '#d1fae5;color:#065f46';
+            return `
+            <div class="ticket-item priority-${t.priority}">
+                <div class="ticket-item-header">
+                    <span class="ticket-id">🎫 ${t.ticketId}</span>
+                    <span class="priority-pill" style="background:${priColor}">${t.priority}</span>
+                    <span class="status-pill ${statusClass(t.status)}">${statusEmoji(t.status)} ${t.status}</span>
+                </div>
+                <div style="font-size:0.9rem;display:grid;gap:6px;">
+                    <div><strong>📍 Station:</strong> ${t.station}</div>
+                    <div><strong>📂 Department:</strong> ${t.category}</div>
+                    <div><strong>📝 Issue:</strong> ${t.description.substring(0,120)}${t.description.length>120?'...':''}</div>
+                    <div><strong>🤖 AI:</strong> ${t.aiReason||'Keyword matched'}</div>
+                    <div style="font-size:0.75rem;color:#64748b;">📅 ${new Date(t.timestamp).toLocaleString('en-ZA')}</div>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    // ── Status sub-tab helpers ───────────────────────────────────────────────────
+    function statusCounts(tickets) {
+        return {
+            all:        tickets.length,
+            pending:    tickets.filter(t => t.status === STATUS.PENDING).length,
+            inProgress: tickets.filter(t => t.status === STATUS.IN_PROGRESS).length,
+            resolved:   tickets.filter(t => t.status === STATUS.RESOLVED).length,
+            closed:     tickets.filter(t => t.status === STATUS.CLOSED).length,
+        };
+    }
+
+    function buildStatusTabs(counts, activeTab, setter) {
+        const tabs = [
+            { key:'all',        label:'All',         emoji:'📋', count: counts.all },
+            { key:'pending',    label:'Pending',      emoji:'⏳', count: counts.pending },
+            { key:'inProgress', label:'In Progress',  emoji:'🔵', count: counts.inProgress },
+            { key:'resolved',   label:'Resolved',     emoji:'✅', count: counts.resolved },
+            { key:'closed',     label:'Closed',       emoji:'🔒', count: counts.closed },
+        ];
+        return tabs.map(t => `
+            <button class="sub-tab ${activeTab===t.key?'sub-tab-active':''}" onclick="${setter}('${t.key}')">
+                ${t.emoji} ${t.label} <span class="sub-tab-count">${t.count}</span>
+            </button>`).join('');
+    }
+
+    function applyAndDisplay(allTickets, statusTab, searchInputId, listId, refreshFn) {
+        const statusMap = { pending: STATUS.PENDING, inProgress: STATUS.IN_PROGRESS, resolved: STATUS.RESOLVED, closed: STATUS.CLOSED };
+        const filter = t => {
+            const q = (document.getElementById(searchInputId)?.value || '').toLowerCase();
+            const matchQ = !q || [t.ticketId, t.station, t.description, t.category].some(v => v.toLowerCase().includes(q));
+            const matchS = statusTab === 'all' || t.status === statusMap[statusTab];
+            return matchQ && matchS;
+        };
+        displaySimpleTickets(allTickets.filter(filter), listId);
+        document.getElementById(searchInputId)?.addEventListener('input', () => {
+            displaySimpleTickets(allTickets.filter(filter), listId);
+        });
+    }
+
+    // ── Global handlers ─────────────────────────────────────────────────────────
+    window.setCitizenTab       = t => { citizenActiveTab = t; render(); };
+    window.setCitizenStatusTab = t => { citizenStatusTab = t; renderCitizenMyTickets(); };
+    window.setStaffStatusTab   = t => { staffStatusTab = t; renderStaffMyTickets(); };
+    window.renderCitizenMyTickets = renderCitizenMyTickets;
+    window.renderStaffMyTickets   = renderStaffMyTickets;
+    window.togglePwd = (inputId, btnId) => {
+        const inp = document.getElementById(inputId);
+        const btn = document.getElementById(btnId);
+        const hidden = inp.type === 'password';
+        inp.type = hidden ? 'text' : 'password';
+        btn.innerHTML = eyeSVG(hidden);
+    };
+
+    window.toggleTab = (ticketId) => {
+        if (openTicketTabs.has(ticketId)) openTicketTabs.delete(ticketId);
+        else openTicketTabs.add(ticketId);
+        // Update DOM without full re-render for smoothness
+        const tab  = document.getElementById(`tab-${ticketId}`);
+        const body = tab.querySelector('.ticket-tab-body');
+        tab.classList.toggle('expanded', openTicketTabs.has(ticketId));
+        body.classList.toggle('open', openTicketTabs.has(ticketId));
+    };
+
+    window.advanceStatus = (ticketId, newStatus) => {
+        const tickets = getTickets();
+        const t = tickets.find(x => x.ticketId === ticketId);
+        if (!t) return;
+        t.status = newStatus;
+        const now = new Date().toISOString();
+        if (newStatus === STATUS.IN_PROGRESS) t.openedAt   = now;
+        if (newStatus === STATUS.RESOLVED)    t.resolvedAt = now;
+        if (newStatus === STATUS.CLOSED)      t.closedAt   = now;
+        saveTickets(tickets);
+        // If closing, collapse the tab
+        if (newStatus === STATUS.CLOSED) openTicketTabs.delete(ticketId);
+        renderAdminDashboard();
+    };
+
+    window.setRole       = r  => { activeRole = r; render(); };
+    window.toggleAuth    = () => { showLogin = !showLogin; render(); };
+    window.setStaffTab   = t  => { staffActiveTab = t; render(); };
+    window.setAdminTab   = t  => { adminActiveTab = t; render(); };
+
+    window.clearAdminSearch = () => {
+        document.getElementById('adminSearch').value = '';
+        document.getElementById('adminStatusFilter').value = '';
+        displayAdminTickets(getTickets());
+    };
+
+    window.handleLogin = () => {
+        const email    = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+        const user     = getUsers().find(u => u.email===email && u.password===password && u.role===activeRole);
+        if (user) {
+            currentUser = user;
+            staffActiveTab = 'lodge';
+            citizenActiveTab = 'lodge';
+            citizenStatusTab = 'all';
+            staffStatusTab = 'all';
+            adminActiveTab = 'tickets';
+            openTicketTabs.clear();
+            render();
+        } else {
+            document.getElementById('loginMsg').innerHTML = '<div class="alert alert-error">❌ Invalid credentials or role mismatch</div>';
+        }
+    };
+
+    window.handleSignup = () => {
+        const name     = document.getElementById('signupName').value.trim();
+        const email    = document.getElementById('signupEmail').value.trim();
+        const password = document.getElementById('signupPassword').value;
+        const users    = getUsers();
+        if (users.find(u => u.email===email)) {
+            document.getElementById('signupMsg').innerHTML = '<div class="alert alert-error">Email already exists</div>';
+            return;
+        }
+        users.push({ id:`${activeRole}_${Date.now()}`, email, password, role:activeRole, name });
+        saveUsers(users);
+        document.getElementById('signupMsg').innerHTML = '<div class="alert alert-success">Account created! Please login.</div>';
+        setTimeout(() => { showLogin=true; render(); }, 1500);
+    };
+
+    window.submitTicket = async () => {
+        const station     = document.getElementById('stationSelect').value;
+        const description = document.getElementById('complaintDesc').value.trim();
+        const priority    = document.getElementById('prioritySelect').value;
+        if (!description) {
+            document.getElementById('ticketMsg').innerHTML = '<div class="alert alert-error">Please describe your complaint</div>';
+            return;
+        }
+        const msgDiv = document.getElementById('ticketMsg');
+        msgDiv.innerHTML = '<div class="alert ai-loading">🤖 AI is analyzing your complaint and routing to the correct department...</div>';
+        const ai = await routeWithAI(description);
+        const t  = {
+            ticketId:  generateTicketId(),
+            userId:    currentUser.id,
+            userName:  currentUser.name,
+            category:  ai.department,
+            priority, station, description,
+            status:    STATUS.PENDING,
+            timestamp: new Date().toISOString(),
+            aiReason:  ai.reason
+        };
+        const tickets = getTickets();
+        tickets.push(t);
+        saveTickets(tickets);
+        msgDiv.innerHTML = `<div class="alert alert-success">✅ Ticket ${t.ticketId} lodged! Routed to ${ai.department}. Status: ⏳ Pending — awaiting admin review.</div>`;
+        document.getElementById('complaintDesc').value = '';
+        setTimeout(() => { citizenActiveTab = 'mytickets'; citizenStatusTab = 'all'; render(); }, 2500);
+    };
+
+    window.submitStaffTicket = async () => {
+        const station     = document.getElementById('staffStationSelect').value;
+        const description = document.getElementById('staffComplaintDesc').value.trim();
+        const priority    = document.getElementById('staffPrioritySelect').value;
+        if (!description) {
+            document.getElementById('staffTicketMsg').innerHTML = '<div class="alert alert-error">Please describe the complaint</div>';
+            return;
+        }
+        const msgDiv = document.getElementById('staffTicketMsg');
+        msgDiv.innerHTML = '<div class="alert ai-loading">🤖 AI is analyzing and routing to the correct department...</div>';
+        const ai = await routeWithAI(description);
+        const t  = {
+            ticketId:  generateTicketId(),
+            userId:    currentUser.id,
+            userName:  currentUser.name + ' (Staff)',
+            category:  ai.department,
+            priority, station, description,
+            status:    STATUS.PENDING,
+            timestamp: new Date().toISOString(),
+            aiReason:  ai.reason + ' (Lodged by staff)'
+        };
+        const tickets = getTickets();
+        tickets.push(t);
+        saveTickets(tickets);
+        msgDiv.innerHTML = `<div class="alert alert-success">✅ Ticket ${t.ticketId} lodged! Status: ⏳ Pending — awaiting admin review.</div>`;
+        document.getElementById('staffComplaintDesc').value = '';
+        setTimeout(() => { staffActiveTab='mytickets'; render(); }, 2500);
+    };
+
+    window.logout = () => { currentUser = null; citizenActiveTab='lodge'; citizenStatusTab='all'; staffActiveTab='lodge'; staffStatusTab='all'; openTicketTabs.clear(); render(); };
+
+    initStorage();
+    render();
+</script>
+</body>
+</html>
