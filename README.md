@@ -56,4 +56,12 @@ SAPS iLodge is a modern, AI-powered complaint and ticket management system built
 Soweto, Pretoria Central, Johannesburg Central, Cape Town Central, Durban Central, Port Elizabeth, Bloemfontein, Mthatha, Nelspruit, Kimberley, Polokwane, Rustenburg, George, Vereeniging, Mitchells Plain, Soshanguve, Tembisa
 
 ---
+## 👥 Project Team
+
+This project was developed as a group project by:
+
+* **Bongimusa Sandile Khoza**
+* **Nompumelelo Nzama**
+* **Joyce Sellwane Mosia**
+* **Zimkhitha Bentsa**
 
